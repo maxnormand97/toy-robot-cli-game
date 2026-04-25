@@ -50,10 +50,10 @@ class ToyRobotCLITest < Minitest::Test
     assert_includes output, 'Position 6,6 is outside a 6x6 grid'
   end
 
-  def test_second_place_reports_robot_already_placed
-    output = run_cli("PLACE 0,0,N\nPLACE 1,1,E\nEXIT\n")
+  def test_second_place_repositions_robot
+    output = run_cli("PLACE 0,0,N\nPLACE 1,1,E\nREPORT\nEXIT\n")
 
-    assert_includes output, 'Robot is already placed and cannot be placed again'
+    assert_includes output, '1,1,E'
   end
 
   def test_move_that_would_leave_grid_prints_error_and_preserves_state

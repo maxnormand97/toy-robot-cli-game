@@ -115,13 +115,13 @@ class RobotTest < Minitest::Test
     assert_equal :invalid_orientation, @robot.last_error.code
   end
 
-  def test_place_cannot_be_called_more_than_once
+  def test_place_can_be_called_more_than_once
     result1 = @robot.place(1, 1, 'E')
-    result2 = @robot.place(2, 2, 'S') # Should be ignored and return false
+    result2 = @robot.place(2, 2, 'S')
     assert_equal true, result1
-    assert_equal false, result2
-    assert_equal [1, 1], @robot.instance_variable_get(:@position)
-    assert_equal 'E', @robot.instance_variable_get(:@orientation)
-    assert_equal :robot_already_placed, @robot.last_error.code
+    assert_equal true, result2
+    assert_equal [2, 2], @robot.instance_variable_get(:@position)
+    assert_equal 'S', @robot.instance_variable_get(:@orientation)
+    assert_nil @robot.last_error
   end
 end

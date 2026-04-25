@@ -92,8 +92,6 @@ class Robot
   end
 
   def validate_and_place(x_axis, y_axis, orientation)
-    raise RobotAlreadyPlacedError unless @position.empty?
-
     @grid.validate_position!(x_axis, y_axis)
     validate_orientation!(orientation)
 
