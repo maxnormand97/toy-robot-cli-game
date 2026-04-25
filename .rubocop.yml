@@ -11,3 +11,12 @@
 
 AllCops:
   NewCops: enable
+
+Style/OneClassPerFile:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Naming/PredicateMethod:
+  Enabled: false
