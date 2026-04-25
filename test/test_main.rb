@@ -80,14 +80,9 @@ class ToyRobotCLITest < Minitest::Test
   def run_cli(commands)
     input = StringIO.new(commands)
     output = StringIO.new
-    original_stdout = $stdout
-    captured_stdout = StringIO.new
-    $stdout = captured_stdout
 
     ToyRobotCLI.new(input: input, output: output).run
 
-    output.string + captured_stdout.string
-  ensure
-    $stdout = original_stdout
+    output.string
   end
 end

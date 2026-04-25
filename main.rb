@@ -71,6 +71,7 @@ class ToyRobotCLI
     # This lets us handle both CLI and robot commands with one line using simple
     # meta-programming
     result = respond_to?(action, true) ? send(action) : robot.public_send(action)
+    output.puts(result) if action == :report && result
     return result unless result == false
 
     print_last_error if robot.last_error

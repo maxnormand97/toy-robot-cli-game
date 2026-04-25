@@ -101,9 +101,7 @@ class Robot
   end
 
   def generate_report
-    # TODO: we need to add in a better way to format the output of the report
     output = "#{@position[0]},#{@position[1]},#{@orientation}"
-    puts output
     clear_last_error
     output
   end

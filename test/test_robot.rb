@@ -102,10 +102,8 @@ class RobotTest < Minitest::Test
 
     @robot.place(4, 5, 'S')
     expected = '4,5,S'
-    assert_output("#{expected}\n") do
-      result = @robot.report
-      assert_equal expected, result
-    end
+    result = @robot.report
+    assert_equal expected, result
   end
 
   def test_place_ignores_invalid_orientation
