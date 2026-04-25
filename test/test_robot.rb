@@ -10,6 +10,11 @@ class RobotTest < Minitest::Test
     @robot = Robot.new
   end
 
+  def assert_robot_report(expected_report)
+    assert_equal expected_report, @robot.report
+    assert_nil @robot.last_error
+  end
+
   def test_move_fails_before_placement
     assert_equal false, @robot.move
     assert_equal :robot_not_placed, @robot.last_error.code
@@ -32,68 +37,68 @@ class RobotTest < Minitest::Test
 
   def test_place_sets_position_and_orientation
     @robot.place(2, 3, 'N')
-    assert_equal [2, 3], @robot.instance_variable_get(:@position)
-    assert_equal 'N', @robot.instance_variable_get(:@orientation)
-    assert_nil @robot.last_error
+    assert_robot_report('2,3,N')
   end
 
   def test_place_normalizes_orientation_case
     assert_equal true, @robot.place(2, 3, 'n')
-    assert_equal 'N', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('2,3,N')
   end
 
   def test_place_ignores_invalid_position
-    @robot.place(6, 6, 'N') # Out of bounds
-    assert_equal [], @robot.instance_variable_get(:@position)
-    assert_nil @robot.instance_variable_get(:@orientation)
+    assert_equal false, @robot.place(6, 6, 'N') # Out of bounds
     assert_equal :position_out_of_bounds, @robot.last_error.code
+
+    assert_equal false, @robot.move
+    assert_equal :robot_not_placed, @robot.last_error.code
   end
 
   def test_move_within_bounds
     @robot.place(0, 0, 'N')
     assert_equal true, @robot.move
-    assert_equal [0, 1], @robot.instance_variable_get(:@position)
+    assert_robot_report('0,1,N')
 
     @robot.right # Now facing East
     assert_equal true, @robot.move
-    assert_equal [1, 1], @robot.instance_variable_get(:@position)
+    assert_robot_report('1,1,E')
   end
 
   def test_move_ignores_out_of_bounds_south
     @robot.place(0, 0, 'S')
     assert_equal false, @robot.move
-    assert_equal [0, 0], @robot.instance_variable_get(:@position)
+    assert_equal :position_out_of_bounds, @robot.last_error.code
+    assert_robot_report('0,0,S')
   end
 
   def test_move_ignores_out_of_bounds_west
     @robot.place(0, 0, 'W')
     assert_equal false, @robot.move
-    assert_equal [0, 0], @robot.instance_variable_get(:@position)
+    assert_equal :position_out_of_bounds, @robot.last_error.code
+    assert_robot_report('0,0,W')
   end
 
-  # TODO: / CHECK: can multiple robots be on the same Grid? if so this test is false
   def test_move_ignores_out_of_bounds_north
-    robot2 = Robot.new
-    robot2.place(Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 1, 'N')
-    assert_equal false, robot2.move
-    assert_equal [Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 1], robot2.instance_variable_get(:@position)
+    @robot.place(Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 1, 'N')
+    assert_equal false, @robot.move
+    assert_equal :position_out_of_bounds, @robot.last_error.code
+    assert_robot_report("#{Grid::DEFAULT_SIZE - 1},#{Grid::DEFAULT_SIZE - 1},N")
   end
 
   def test_left_and_right_turns
     @robot.place(0, 0, 'N')
-    assert_equal 'N', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('0,0,N')
 
     @robot.left
-    assert_equal 'W', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('0,0,W')
 
     @robot.left
-    assert_equal 'S', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('0,0,S')
 
     @robot.right
-    assert_equal 'W', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('0,0,W')
 
     @robot.right
-    assert_equal 'N', @robot.instance_variable_get(:@orientation)
+    assert_robot_report('0,0,N')
   end
 
   def test_report_outputs_position_and_orientation
@@ -107,10 +112,11 @@ class RobotTest < Minitest::Test
   end
 
   def test_place_ignores_invalid_orientation
-    @robot.place(2, 3, 'A') # Invalid orientation
-    assert_equal [], @robot.instance_variable_get(:@position)
-    assert_nil @robot.instance_variable_get(:@orientation)
+    assert_equal false, @robot.place(2, 3, 'A') # Invalid orientation
     assert_equal :invalid_orientation, @robot.last_error.code
+
+    assert_equal false, @robot.right
+    assert_equal :robot_not_placed, @robot.last_error.code
   end
 
   def test_place_can_be_called_more_than_once
@@ -118,8 +124,6 @@ class RobotTest < Minitest::Test
     result2 = @robot.place(2, 2, 'S')
     assert_equal true, result1
     assert_equal true, result2
-    assert_equal [2, 2], @robot.instance_variable_get(:@position)
-    assert_equal 'S', @robot.instance_variable_get(:@orientation)
-    assert_nil @robot.last_error
+    assert_robot_report('2,2,S')
   end
 end
