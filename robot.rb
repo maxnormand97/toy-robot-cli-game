@@ -13,8 +13,6 @@
 
 # Creates a robot that will move along a grid of 6 x 6
 class Robot
-  def initialize; end
-
   def say_gday
     puts "I AM ALIVE G'DAY!"
   end
