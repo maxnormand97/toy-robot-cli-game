@@ -21,7 +21,6 @@ class ToyRobotCLI
     @input = input
     @output = output
     @robot = robot
-    @placed = false
   end
 
   # rubocop:disable Metrics/MethodLength
@@ -65,8 +64,8 @@ class ToyRobotCLI
     # each value as a separate argument to robot.place.
     # So robot.place(*arguments) is the same as robot.place(2, 3, "N").
     result = robot.place(*arguments)
-    @placed = true if result
     print_last_error if robot.last_error
+    result
   end
 
   def execute(action)
@@ -105,7 +104,7 @@ class ToyRobotCLI
   end
 
   def ignore_before_place?(action)
-    !@placed && COMMANDS_REQUIRING_PLACEMENT.include?(action)
+    !robot.placed? && COMMANDS_REQUIRING_PLACEMENT.include?(action)
   end
 
   def print_help

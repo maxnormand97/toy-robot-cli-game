@@ -19,6 +19,10 @@ class Robot
 
   attr_reader :last_error
 
+  def placed?
+    !@position.empty? && !@orientation.nil?
+  end
+
   def initialize(grid = Grid.new)
     @grid = grid
     @orientation = nil # is the robot facing N, S, E, W
