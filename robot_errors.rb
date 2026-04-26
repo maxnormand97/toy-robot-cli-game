@@ -16,12 +16,6 @@ class RobotNotPlacedError < RobotError
   end
 end
 
-class RobotAlreadyPlacedError < RobotError
-  def initialize
-    super('Robot is already placed and cannot be placed again', :robot_already_placed)
-  end
-end
-
 class InvalidOrientationError < RobotError
   def initialize(orientation, directions)
     super("Orientation must be one of #{directions.join(', ')}, received: #{orientation.inspect}", :invalid_orientation)

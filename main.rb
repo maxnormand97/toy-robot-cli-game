@@ -6,6 +6,8 @@ require_relative 'robot'
 # Simple REPL for the toy robot exercise, acts as an entry point for the CLI.
 class ToyRobotCLI
   GRID_SIZE = 6
+  COMMANDS_REQUIRING_PLACEMENT = %i[move left right report].freeze
+  PRE_PLACE_MESSAGE = 'Robot must be placed first using PLACE X,Y,O'
   DIRECT_COMMANDS = {
     'MOVE' => :move,
     'LEFT' => :left,
@@ -19,6 +21,7 @@ class ToyRobotCLI
     @input = input
     @output = output
     @robot = robot
+    @placed = false
   end
 
   # rubocop:disable Metrics/MethodLength
@@ -61,11 +64,17 @@ class ToyRobotCLI
     # Using Splat (*) we can take the array arguments (like [2, 3, "N"]) and pass
     # each value as a separate argument to robot.place.
     # So robot.place(*arguments) is the same as robot.place(2, 3, "N").
-    robot.place(*arguments)
+    result = robot.place(*arguments)
+    @placed = true if result
     print_last_error if robot.last_error
   end
 
   def execute(action)
+    if ignore_before_place?(action)
+      output.puts PRE_PLACE_MESSAGE
+      return false
+    end
+
     # If the CLI class has a method for this action (like print_help), call it;
     # otherwise, call the method on the robot (like move, left, right, report).
     # This lets us handle both CLI and robot commands with one line using simple
@@ -93,6 +102,10 @@ class ToyRobotCLI
 
   def print_last_error
     output.puts robot.last_error.message
+  end
+
+  def ignore_before_place?(action)
+    !@placed && COMMANDS_REQUIRING_PLACEMENT.include?(action)
   end
 
   def print_help

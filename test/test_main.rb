@@ -36,6 +36,12 @@ class ToyRobotCLITest < Minitest::Test
     assert_includes output, 'Robot must be placed first using PLACE X,Y,O'
   end
 
+  def test_move_left_right_before_placement_print_errors
+    output = run_commands('MOVE', 'LEFT', 'RIGHT', 'REPORT', 'EXIT')
+
+    assert_equal 4, output.scan('Robot must be placed first using PLACE X,Y,O').length
+  end
+
   def test_invalid_place_format_prints_usage_message
     output = run_commands('PLACE 1,2', 'EXIT')
 
@@ -52,6 +58,30 @@ class ToyRobotCLITest < Minitest::Test
     output = run_commands('PLACE 0,0,N', 'PLACE 1,1,E', 'REPORT', 'EXIT')
 
     assert_includes output, '1,1,E'
+  end
+
+  def test_lowercase_commands_are_supported
+    output = run_commands('place 0,0,n', 'move', 'right', 'move', 'report', 'exit')
+
+    assert_includes output, '1,1,E'
+  end
+
+  def test_place_with_extra_spaces_is_supported
+    output = run_commands('PLACE   1 , 2 , e', 'REPORT', 'EXIT')
+
+    assert_includes output, '1,2,E'
+  end
+
+  def test_place_with_extra_arguments_is_rejected
+    output = run_commands('PLACE 1,2,N,EXTRA', 'EXIT')
+
+    assert_includes output, 'Invalid PLACE format. Use: PLACE X,Y,O'
+  end
+
+  def test_place_with_decimal_coordinate_is_rejected
+    output = run_commands('PLACE 1.5,2,N', 'EXIT')
+
+    assert_includes output, 'Invalid PLACE format. Use: PLACE X,Y,O'
   end
 
   def test_move_that_would_leave_grid_prints_error_and_preserves_state
