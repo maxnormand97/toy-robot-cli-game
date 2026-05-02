@@ -89,9 +89,16 @@ class Robot
 
   def perform_move
     new_x, new_y = next_position
-    @grid.validate_position!(new_x, new_y)
 
-    @position = [new_x, new_y]
+    if @grid.valid_position?(new_x, new_y)
+      @position = [new_x, new_y]
+    else
+      corner_exit = @grid.corner_exit_for(@position[0], @position[1], @orientation)
+      raise PositionOutOfBoundsError.new(new_x, new_y, @grid.size) unless corner_exit
+
+      @position = corner_exit
+    end
+
     clear_last_error
   end
 

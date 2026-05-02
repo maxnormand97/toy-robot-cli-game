@@ -5,6 +5,7 @@ require_relative '../grid'
 require_relative '../robot'
 require_relative '../robot_errors'
 
+# rubocop:disable Metrics/ClassLength
 class RobotTest < Minitest::Test
   def setup
     @robot = Robot.new
@@ -63,25 +64,49 @@ class RobotTest < Minitest::Test
     assert_robot_report('1,1,E')
   end
 
-  def test_move_ignores_out_of_bounds_south
+  def test_move_from_sw_corner_facing_south_wraps_to_nw
     @robot.place(0, 0, 'S')
-    assert_equal false, @robot.move
-    assert_equal :position_out_of_bounds, @robot.last_error.code
-    assert_robot_report('0,0,S')
+
+    assert_equal true, @robot.move
+    assert_robot_report('0,5,S')
   end
 
-  def test_move_ignores_out_of_bounds_west
+  def test_move_from_sw_corner_facing_west_wraps_to_se
     @robot.place(0, 0, 'W')
-    assert_equal false, @robot.move
-    assert_equal :position_out_of_bounds, @robot.last_error.code
-    assert_robot_report('0,0,W')
+
+    assert_equal true, @robot.move
+    assert_robot_report('5,0,W')
   end
 
-  def test_move_ignores_out_of_bounds_north
+  def test_move_from_ne_corner_facing_north_wraps_to_se
     @robot.place(Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 1, 'N')
+
+    assert_equal true, @robot.move
+    assert_robot_report("#{Grid::DEFAULT_SIZE - 1},0,N")
+  end
+
+  def test_move_ignores_out_of_bounds_south_when_not_on_corner
+    @robot.place(1, 0, 'S')
+
     assert_equal false, @robot.move
     assert_equal :position_out_of_bounds, @robot.last_error.code
-    assert_robot_report("#{Grid::DEFAULT_SIZE - 1},#{Grid::DEFAULT_SIZE - 1},N")
+    assert_robot_report('1,0,S')
+  end
+
+  def test_move_ignores_out_of_bounds_west_when_not_on_corner
+    @robot.place(0, 1, 'W')
+
+    assert_equal false, @robot.move
+    assert_equal :position_out_of_bounds, @robot.last_error.code
+    assert_robot_report('0,1,W')
+  end
+
+  def test_move_ignores_out_of_bounds_north_when_not_on_corner
+    @robot.place(Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 2, 'N')
+
+    assert_equal false, @robot.move
+    assert_equal :position_out_of_bounds, @robot.last_error.code
+    assert_robot_report("#{Grid::DEFAULT_SIZE - 1},#{Grid::DEFAULT_SIZE - 2},N")
   end
 
   def test_left_and_right_turns
@@ -127,3 +152,4 @@ class RobotTest < Minitest::Test
     assert_robot_report('2,2,S')
   end
 end
+# rubocop:enable Metrics/ClassLength

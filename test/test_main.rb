@@ -85,9 +85,9 @@ class ToyRobotCLITest < Minitest::Test
   end
 
   def test_move_that_would_leave_grid_prints_error_and_preserves_state
-    output = run_commands('PLACE 0,0,S', 'MOVE', 'REPORT', 'EXIT')
+    output = run_commands('PLACE 1,0,S', 'MOVE', 'REPORT', 'EXIT')
 
-    assert_output_includes(output, 'Position 0,-1 is outside a 6x6 grid', '0,0,S')
+    assert_output_includes(output, 'Position 1,-1 is outside a 6x6 grid', '1,0,S')
   end
 
   def test_unknown_command_prints_guidance

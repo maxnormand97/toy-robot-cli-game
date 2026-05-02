@@ -49,4 +49,14 @@ class GridTest < Minitest::Test
 
     assert_equal :invalid_grid_size, error.code
   end
+
+  def test_corner_exit_for_returns_destination_corner_for_valid_exit_directions
+    assert_equal [Grid::DEFAULT_SIZE - 1, 0], @grid.corner_exit_for(Grid::DEFAULT_SIZE - 1, Grid::DEFAULT_SIZE - 1, 'N')
+    assert_equal [0, Grid::DEFAULT_SIZE - 1], @grid.corner_exit_for(0, 0, 'S')
+  end
+
+  def test_corner_exit_for_returns_nil_for_non_corner_or_non_exit_direction
+    assert_nil @grid.corner_exit_for(1, 1, 'N')
+    assert_nil @grid.corner_exit_for(0, 0, 'N')
+  end
 end
